@@ -1,5 +1,5 @@
 // 最长公共上升子序列
-// acwimng 274
+// acwing 274
 // https://www.acwing.com/problem/content/274/
 
 // 数列A和B的长度均不超过3000。
@@ -14,10 +14,6 @@
 //
 // 数据范围
 // 1≤N≤3000,序列中的数字均不超过2^31−1
-
-/*
- *
- */
 
 #include <iostream>
 #include <vector>
