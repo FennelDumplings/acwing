@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <vector>
+#include <climits>
 
 using namespace std;
 
@@ -47,6 +48,46 @@ void solve(const vector<int>& stones)
     cout << dp[0][n - 1] << endl;
 }
 
+// 四边形不等式优化
+void solve_optim(const vector<int>& stones)
+{
+    int n = stones.size();
+    if(n == 1)
+    {
+        cout << 0 << endl;
+        return;
+    }
+
+    vector<int> sums(n + 1, 0);
+    for(int i = 1; i <=n ; ++i)
+        sums[i] = sums[i - 1] + stones[i - 1];
+
+    vector<vector<int> > dp(n + 1, vector<int>(n, INT_MAX)); // 这里要 n + 1 行
+    vector<vector<int> > s(n, vector<int>(n, 0)); // s[i][j] = dp[i][j] 取得最优解时 k 的下标
+    for(int i = 0; i < n; ++i)
+    {
+        dp[i][i] = 0;
+        s[i][i] = i;
+    }
+
+    for(int j = 1; j < n; ++j)
+        for(int i = j - 1; i >= 0; --i)
+        {
+            for(int k = s[i][j - 1]; k <= s[i + 1][j]; ++k)
+            {
+                // 这里有个 dp[k+1], 可能有 k + 1 = n，所以 dp 需要有 n + 1 行
+                // 直接在 dp 上 min，需要初始化为 INT_MAX
+                if(dp[i][k] + dp[k + 1][j] < dp[i][j])
+                {
+                    dp[i][j] = dp[i][k] + dp[k + 1][j];
+                    s[i][j] = k;
+                }
+            }
+            dp[i][j] += range_sum(sums, i, j);
+        }
+    cout << dp[0][n - 1] << endl;
+}
+
 int main()
 {
     int N;
@@ -54,5 +95,5 @@ int main()
     vector<int> stones(N, 0);
     for(int i = 0; i < N; ++i)
         cin >> stones[i];
-    solve(stones);
+    solve_optim(stones);
 }
