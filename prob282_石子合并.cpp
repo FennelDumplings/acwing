@@ -88,6 +88,53 @@ void solve_optim(const vector<int>& stones)
     cout << dp[0][n - 1] << endl;
 }
 
+// GarsiaWachs 算法
+void solve_optim2(vector<int>& stones)
+{
+    int n = stones.size();
+    if(n == 1)
+    {
+        cout << 0 << endl;
+        return;
+    }
+    int ans = 0;
+
+    for(int i = 0; i < n - 1; ++i)
+    {
+        int m = stones.size();
+
+        // step1
+        int k = 0;
+        while(k < m - 2)
+        {
+            if(stones[k] <= stones[k + 2])
+                break;
+            ++k;
+        }
+
+        // step2
+        int temp = stones[k] + stones[k + 1];
+        ans += temp;
+
+        // step3
+        int l = k - 1;
+        while(l >= 0)
+        {
+            if(stones[l] > temp)
+                break;
+            --l;
+        }
+
+        // step4
+        stones.erase(stones.begin() + k + 1);
+        stones.erase(stones.begin() + k);
+
+        // step5
+        stones.insert(stones.begin() + l + 1, temp);
+    }
+    cout << ans << endl;
+}
+
 int main()
 {
     int N;
@@ -95,5 +142,5 @@ int main()
     vector<int> stones(N, 0);
     for(int i = 0; i < N; ++i)
         cin >> stones[i];
-    solve_optim(stones);
+    solve_optim2(stones);
 }
