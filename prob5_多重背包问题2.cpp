@@ -15,11 +15,10 @@ int main()
     for(int i = 0; i < N; ++i)
         cin >> v[i] >> w[i] >> s[i];
 
-
     for(int i = 0; i < N; ++i)
     {
         int ss = s[i];
-        ss -= 1;
+        ss -= 1; // 物品 (v[i], w[i]) 已经在里面
         for(int k = 2; k <= ss; k *= 2)
         {
             ss -= k;
@@ -33,15 +32,12 @@ int main()
         }
     }
 
-
-
     vector<int> dp(V + 1, 0);
 
     N = v.size();
     for(int i = 1; i <= N; ++i)
         for(int j = V; j >= v[i - 1]; --j)
             dp[j] = max(dp[j], dp[j - v[i - 1]] + w[i - 1]);
-
 
     cout << dp[V] << endl;
     return 0;
