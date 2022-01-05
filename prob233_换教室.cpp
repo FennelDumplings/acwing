@@ -88,7 +88,7 @@ int main()
     dp2[1][1] = 0;
     for(int i = 2; i <= n; ++i)
     {
-        dp1[i][0] = dist[c[i - 1]][c[i]] + dp1[i - 1][0];
+        dp1[i][0] = dist[c[i - 1]][c[i]] + dp1[i - 1][0]
         for(int j = 1; j <= min(i, m); ++j)
         {
             dp1[i][j] = min(dist[c[i - 1]][c[i]] + dp1[i - 1][j]
