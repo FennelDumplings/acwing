@@ -149,7 +149,6 @@ private:
         p = tmp;
         update_size(p -> left);
         update_size(p);
-
     }
 
     void insert(int val, TreapNode*& p)
@@ -216,7 +215,6 @@ private:
         else
             remove(val, p -> right);
         update_size(p);
-
     }
 
     int lessthan(int val, TreapNode* p)
