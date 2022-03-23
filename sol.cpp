@@ -1,5 +1,9 @@
 #include <iostream>
+#include <fstream>
+#include <cmath>
+#include <unordered_map>
 #include <cstdlib>
+#include <vector>
 
 using namespace std;
 
@@ -104,6 +108,30 @@ public:
         return ans -> val;
     }
 
+    void show(auto& fout)
+    {
+        unordered_map<TreapNode*, int> x_mapping; // 节点指针 -> 行号(从0开始)
+        int max_depth = 0;
+        dfs1(root, x_mapping, 0, max_depth); // 得到最大深度 max_depth(从 0 开始的最大行号)，以及 x_mapping(节点 -> 行号)
+
+        // 也就是 root 的 y 值范围为 [-pow(2, max_depth) + 1, pow(2, max_depth) - 1]
+        // 如果当前节点 node 的范围为 [l, r]，则
+        //     当前节点的 y 值为 (l + r) / 2
+        //     node -> left 对应的范围为 [l, (l + r)/2 - 1]
+        //     node -> right 对应的范围为 [(l + r)/2 + 1, r]
+        // 两层节点之间增加 3 行，用于画连接线，因此 visual_board 总行数为 4 * max_depth + 1，行号 (0 ~ 4 * max_depth)
+        // 列数 pow(2, max_depth + 1) - 1 (列号 0 ~ pow(2, max_depth + 1) - 1)
+        vector<vector<string>> visual_board(4 * max_depth + 1, vector<string>(pow(2, max_depth + 1) - 1, "    "));
+        dfs2(root, x_mapping, 0, pow(2, max_depth + 1) - 2, visual_board);
+        for(int i = 0; i <= max_depth + 3 * max_depth; ++i)
+        {
+            for(int j = 0; j <= pow(2, max_depth + 1) - 2; ++j)
+                fout << visual_board[i][j];
+            fout << endl;
+        }
+        fout << endl;
+    }
+
 private:
     TreapNode *root;
 
@@ -117,6 +145,60 @@ private:
         if(p -> val > val)
             return find(val, p -> left);
         return find(val, p -> right);
+    }
+
+    void dfs1(TreapNode* node, unordered_map<TreapNode*, int>& x_mapping, int depth, int& max_depth)
+    {
+        x_mapping[node] = depth;
+        max_depth = max(max_depth, depth);
+        if(node -> left)
+            dfs1(node -> left, x_mapping, depth + 1, max_depth);
+        if(node -> right)
+            dfs1(node -> right, x_mapping, depth + 1, max_depth);
+    }
+
+    void dfs2(TreapNode* node, unordered_map<TreapNode*, int>& x_mapping, int l, int r, vector<vector<string>>& visual_board)
+    {
+        int y = (l + r) / 2;
+        int x = x_mapping[node];
+        visual_board[x * 4][y] = to_string(node -> val) + ',' + to_string(node -> cnt) + string(2 - len(node -> val), ' ');
+        if(!node -> left && !node -> right)
+            return;
+        if(node -> right)
+        {
+            visual_board[x * 4 + 1][y] = "|   ";
+            visual_board[x * 4 + 2][y] = "----";
+        }
+        else
+        {
+            visual_board[x * 4 + 1][y] = "   |";
+            visual_board[x * 4 + 2][y] = "----";
+        }
+        if(node -> left)
+        {
+            for(int j = (l + (l + r) / 2 - 1) / 2; j < y; ++j)
+                visual_board[x * 4 + 2][j] = "----";
+            visual_board[x * 4 + 3][(l + (l + r) / 2 - 1) / 2] = "|   ";
+            dfs2(node -> left, x_mapping, l, (l + r) / 2 - 1, visual_board);
+        }
+        if(node -> right)
+        {
+            for(int j = y; j <= ((l + r) / 2 + 1 + r) / 2; ++j)
+                visual_board[x * 4 + 2][j] = "----";
+            visual_board[x * 4 + 3][((l + r) / 2 + 1 + r) / 2] = "   |";
+            dfs2(node -> right, x_mapping, (l + r) / 2 + 1, r, visual_board);
+        }
+    }
+
+    int len(int x)
+    {
+        int ans = 0;
+        while(x > 0)
+        {
+            ++ans;
+            x /= 10;
+        }
+        return ans;
     }
 
     void update_size(TreapNode* p)
@@ -272,6 +354,7 @@ int main()
     int n;
     cin >> n;
     Treap treap = Treap();
+    ofstream fout("out.txt");
     for(int i = 0; i < n; ++i)
     {
         int opt, x;
@@ -280,21 +363,29 @@ int main()
         {
         case 1:
             treap.insert(x);
+            fout << i << ": insert(" << x << ")" << endl;
+            treap.show(fout);
             break;
         case 2:
             treap.remove(x);
+            fout << i << ": remove(" << x << ")" << endl;
+            treap.show(fout);
             break;
         case 3:
             cout << treap.lessthan(x) + 1 << endl;
+            fout << i << ": lessthan(" << x << ") + 1" << endl;
             break;
         case 4:
             cout << treap.get_value(x) << endl;
+            fout << i << ": get_value(" << x << ")" << endl;
             break;
         case 5:
             cout << treap.get_precursor(x) << endl;
+            fout << i << ": get_precursor(" << x << ")" << endl;
             break;
         case 6:
             cout << treap.get_successor(x) << endl;
+            fout << i << ": get_successor(" << x << ")" << endl;
             break;
         }
     }
