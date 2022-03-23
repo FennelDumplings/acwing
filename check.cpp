@@ -8,9 +8,9 @@ int main()
 {
 
     double st = clock();
-    system("./sol.out <data.in >data.ans");
+    system("./sol.out <data.in >data.out");
     double ed = clock();
-    system("./bf.out <data.in >data.out");
+    system("./bf.out <data.in >data.ans");
     if(system("diff data.out data.ans"))
     {
         puts("Wrong Answer");

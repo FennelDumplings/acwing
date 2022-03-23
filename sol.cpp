@@ -161,7 +161,7 @@ private:
     {
         int y = (l + r) / 2;
         int x = x_mapping[node];
-        visual_board[x * 4][y] = to_string(node -> val) + ',' + to_string(node -> cnt) + string(2 - len(node -> val), ' ');
+        visual_board[x * 4][y] = to_string(node -> val) + ',' + to_string(node -> size) + string(2 - len(node -> size), ' ') + string(2 - len(node -> val), ' ');
         if(!node -> left && !node -> right)
             return;
         if(node -> right)
@@ -284,6 +284,7 @@ private:
                     zag(p);
                     remove(val, p -> left);
                 }
+                update_size(p);
             }
             else
             {
@@ -298,7 +299,6 @@ private:
         else
             remove(val, p -> right);
         update_size(p);
-
     }
 
     int lessthan(int val, TreapNode* p)
@@ -314,14 +314,12 @@ private:
         }
         if(val < p -> val)
             return lessthan(val, p -> left);
-        if(val > p -> val)
-        {
-            int ans = p -> cnt;
-            ans += lessthan(val, p -> right);
-            if(p -> left)
-                ans += p -> left -> size;
-            return ans;
-        }
+        // val > p -> val
+        int ans = p -> cnt;
+        ans += lessthan(val, p -> right);
+        if(p -> left)
+            ans += p -> left -> size;
+        return ans;
     }
 
     int get_value(int rank, TreapNode* p)
@@ -335,6 +333,7 @@ private:
             s += p -> left -> size;
         if(s >= rank)
             return p -> val;
+        // rank > s
         return get_value(rank - s, p -> right);
     }
 
@@ -353,8 +352,10 @@ int main()
 {
     int n;
     cin >> n;
+    srand((unsigned)time(0));
     Treap treap = Treap();
-    ofstream fout("out.txt");
+    // ofstream fout("out.txt");
+    // int j = 0;
     for(int i = 0; i < n; ++i)
     {
         int opt, x;
@@ -363,29 +364,33 @@ int main()
         {
         case 1:
             treap.insert(x);
-            fout << i << ": insert(" << x << ")" << endl;
-            treap.show(fout);
+            // fout << i << ": insert(" << x << ")" << endl;
+            // treap.show(fout);
             break;
         case 2:
             treap.remove(x);
-            fout << i << ": remove(" << x << ")" << endl;
-            treap.show(fout);
+            // fout << i << ": remove(" << x << ")" << endl;
+            // treap.show(fout);
             break;
         case 3:
             cout << treap.lessthan(x) + 1 << endl;
-            fout << i << ": lessthan(" << x << ") + 1" << endl;
+            // fout << i << ": lessthan(" << x << ") + 1" << endl;
+            // fout << "output " << ++j << ": " << treap.lessthan(x) + 1 << endl;
             break;
         case 4:
             cout << treap.get_value(x) << endl;
-            fout << i << ": get_value(" << x << ")" << endl;
+            // fout << i << ": get_value(" << x << ")" << endl;
+            // fout << "output " << ++j << ": " << treap.get_value(x) << endl;
             break;
         case 5:
             cout << treap.get_precursor(x) << endl;
-            fout << i << ": get_precursor(" << x << ")" << endl;
+            // fout << i << ": get_precursor(" << x << ")" << endl;
+            // fout << "output " << ++j << ": " << treap.get_precursor(x) << endl;
             break;
         case 6:
             cout << treap.get_successor(x) << endl;
-            fout << i << ": get_successor(" << x << ")" << endl;
+            // fout << i << ": get_successor(" << x << ")" << endl;
+            // fout << "output " << ++j << ": " << treap.get_successor(x) << endl;
             break;
         }
     }

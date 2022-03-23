@@ -1,9 +1,4 @@
 #include <iostream>
-#include <fstream>
-#include <cmath>
-#include <unordered_map>
-#include <cstdlib>
-#include <vector>
 
 using namespace std;
 
@@ -12,8 +7,6 @@ const int INF = 1e9;
 struct TreapNode
 {
     int val;
-    int size;
-    int cnt;
     int w;
     TreapNode *left, *right;
     TreapNode():size(1),cnt(1),w(rand()),left(nullptr),right(nullptr){}
@@ -23,7 +16,6 @@ class Treap
 {
 public:
     Treap():root(nullptr){}
-
     ~Treap()
     {
         delete_sub_tree(root);
@@ -41,72 +33,15 @@ public:
 
     int lessthan(int val)
     {
+        // 小于 val 的个数
         return lessthan(val, root);
     }
 
     int get_value(int rank)
     {
+        // rank 从 1 开始
         return get_value(rank, root);
     }
-
-    /*
-    void show(auto& fout)
-    {
-        unordered_map<TreapNode*, int> x_mapping;
-        int max_depth = 0;
-        // 对于最大深度 max_depth (从 0 开始)，y 从零往右可以到 pow(2, max_depth) - 1
-        // 也就是 root 的 y 值范围为 [-pow(2, max_depth) + 1, pow(2, max_depth) - 1]
-        // 如果当前节点 node 的范围为 [l, r]，则当前节点的 y 值为 (l + r) / 2
-        // node -> left 对应的范围为 [l, (l + r)/2 - 1]
-        // node -> right 对应的范围为 [(l + r)/2 + 1, r]
-        dfs1(root, x_mapping, 0, max_depth);
-        string default_str = "  ";
-        vector<vector<string>> visual_board(max_depth + 1 + 3 * max_depth, vector<string>(pow(2, max_depth + 1) - 1, default_str));
-        dfs2(root, x_mapping, 0, pow(2, max_depth + 1) - 2, visual_board);
-        for(int i = 0; i <= max_depth + 3 * max_depth; ++i)
-        {
-            for(int j = 0; j <= pow(2, max_depth + 1) - 2; ++j)
-                cout << visual_board[i][j];
-            cout << endl;
-        }
-        cout << endl;
-    }
-
-    void dfs1(TreapNode* node, unordered_map<TreapNode*, int>& x_mapping, int depth, int& max_depth)
-    {
-        x_mapping[node] = depth;
-        max_depth = max(max_depth, depth);
-        if(node -> left)
-            dfs1(node -> left, x_mapping, depth + 1, max_depth);
-        if(node -> right)
-            dfs1(node -> right, x_mapping, depth + 1, max_depth);
-    }
-
-    void dfs2(TreapNode* node, unordered_map<TreapNode*, int>& x_mapping, int l, int r, vector<vector<string>>& visual_board)
-    {
-        int y = (l + r) / 2;
-        int x = x_mapping[node];
-        visual_board[x * 4][y] = node -> val;
-        if(!node -> left && !node -> right)
-            return;
-        visual_board[(x + 4) + 1][y] = "| ";
-        visual_board[(x + 4) + 2][y] = "--";
-        if(node -> left)
-        {
-            for(int j = l; j <= (l + r) / 2 - 1; ++j)
-                visual_board[(x + 4) + 2][j] = "--";
-            visual_board[(x + 4) + 3][(l + (l + r) / 2 - 1) / 2] = "| ";
-            dfs2(node -> left, x_mapping, l, (l + r) / 2 - 1, visual_board);
-        }
-        if(node -> right)
-        {
-            for(int j = (l + r) / 2 + 1; j <= r; ++j)
-                visual_board[(x + 4) + 2][j] = "--";
-            visual_board[(x + 4) + 3][((l + r) / 2 + 1 + r) / 2] = "| ";
-            dfs2(node -> right, x_mapping, (l + r) / 2 + 1, r, visual_board);
-        }
-    }
-    */
 
     int get_successor(int val)
     {
@@ -171,18 +106,6 @@ public:
 private:
     TreapNode *root;
 
-    TreapNode* find(int val, TreapNode* p)
-    {
-        // 大于等于 val 的最小值
-        if(!p)
-            return nullptr;
-        if(p -> val == val)
-            return p;
-        if(p -> val > val)
-            return find(val, p -> left);
-        return find(val, p -> right);
-    }
-
     void update_size(TreapNode* p)
     {
         // 用当前节点的 cnt 和左右子树的 size 更新当前子树的 size
@@ -213,6 +136,7 @@ private:
         p = tmp;
         update_size(p -> left);
         update_size(p);
+
     }
 
     void insert(int val, TreapNode*& p)
@@ -265,6 +189,7 @@ private:
                     zag(p);
                     remove(val, p -> left);
                 }
+                update_size(p);
             }
             else
             {
@@ -294,14 +219,12 @@ private:
         }
         if(val < p -> val)
             return lessthan(val, p -> left);
-        if(val > p -> val)
-        {
-            int ans = p -> cnt;
-            ans += lessthan(val, p -> right);
-            if(p -> left)
-                ans += p -> left -> size;
-            return ans;
-        }
+        // val > p -> val
+        int ans = p -> cnt;
+        ans += lessthan(val, p -> right);
+        if(p -> left)
+            ans += p -> left -> size;
+        return ans;
     }
 
     int get_value(int rank, TreapNode* p)
@@ -315,6 +238,7 @@ private:
             s += p -> left -> size;
         if(s >= rank)
             return p -> val;
+        // rank > s
         return get_value(rank - s, p -> right);
     }
 
@@ -333,8 +257,8 @@ int main()
 {
     int n;
     cin >> n;
+    srand((unsigned)time(0));
     Treap treap = Treap();
-    ofstream fout("out.txt");
     for(int i = 0; i < n; ++i)
     {
         int opt, x;
@@ -343,13 +267,9 @@ int main()
         {
         case 1:
             treap.insert(x);
-            fout << i << ": insert(" << x << ")" << endl;
-            // treap.show(fout);
             break;
         case 2:
             treap.remove(x);
-            fout << i << ": remove(" << x << ")" << endl;
-            // treap.show(fout);
             break;
         case 3:
             cout << treap.lessthan(x) + 1 << endl;
