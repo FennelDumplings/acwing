@@ -10,28 +10,10 @@ using namespace std;
 class Solution {
 public:
     vector<int> specialSort(int N) {
-        vector<int> vec;
-        vec.push_back(1);
-        for(int i = 2; i <= N; ++i)
-        {
-            int left = 0, right = vec.size();
-            while(left < right)
-            {
-                int mid = (left + right) / 2;
-                int j = vec[mid];
-                if(compare(i, j))
-                {
-                    // i < j
-                    right = mid;
-                }
-                else
-                {
-                    // j < i
-                    left = mid + 1;
-                }
-            }
-            vec.insert(vec.begin() + left, i);
-        }
+        vector<int> vec(N);
+        for(int i = 1; i <= N; ++i)
+            vec[i - 1] = i;
+        stable_sort(vec.begin(), vec.end(), compare);
         return vec;
     }
 };
