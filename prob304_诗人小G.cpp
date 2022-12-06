@@ -3,8 +3,12 @@
 #include <string>
 
 using namespace std;
+using ll = long long;
 
-
+ll solve(const vector<string>sentences, int L, int P)
+{
+    //
+}
 
 int main()
 {

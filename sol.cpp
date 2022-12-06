@@ -108,7 +108,7 @@ public:
         return ans -> val;
     }
 
-    void show(auto& fout)
+    void show(ofstream& fout)
     {
         unordered_map<TreapNode*, int> x_mapping; // 节点指针 -> 行号(从0开始)
         int max_depth = 0;
@@ -354,8 +354,8 @@ int main()
     cin >> n;
     srand((unsigned)time(0));
     Treap treap = Treap();
-    // ofstream fout("out.txt");
-    // int j = 0;
+    ofstream fout("out.txt");
+    int j = 0;
     for(int i = 0; i < n; ++i)
     {
         int opt, x;
@@ -364,33 +364,33 @@ int main()
         {
         case 1:
             treap.insert(x);
-            // fout << i << ": insert(" << x << ")" << endl;
-            // treap.show(fout);
+            fout << i << ": insert(" << x << ")" << endl;
+            treap.show(fout);
             break;
         case 2:
             treap.remove(x);
-            // fout << i << ": remove(" << x << ")" << endl;
-            // treap.show(fout);
+            fout << i << ": remove(" << x << ")" << endl;
+            treap.show(fout);
             break;
         case 3:
             cout << treap.lessthan(x) + 1 << endl;
-            // fout << i << ": lessthan(" << x << ") + 1" << endl;
-            // fout << "output " << ++j << ": " << treap.lessthan(x) + 1 << endl;
+            fout << i << ": lessthan(" << x << ") + 1" << endl;
+            fout << "output " << ++j << ": " << treap.lessthan(x) + 1 << endl;
             break;
         case 4:
             cout << treap.get_value(x) << endl;
-            // fout << i << ": get_value(" << x << ")" << endl;
-            // fout << "output " << ++j << ": " << treap.get_value(x) << endl;
+            fout << i << ": get_value(" << x << ")" << endl;
+            fout << "output " << ++j << ": " << treap.get_value(x) << endl;
             break;
         case 5:
             cout << treap.get_precursor(x) << endl;
-            // fout << i << ": get_precursor(" << x << ")" << endl;
-            // fout << "output " << ++j << ": " << treap.get_precursor(x) << endl;
+            fout << i << ": get_precursor(" << x << ")" << endl;
+            fout << "output " << ++j << ": " << treap.get_precursor(x) << endl;
             break;
         case 6:
             cout << treap.get_successor(x) << endl;
-            // fout << i << ": get_successor(" << x << ")" << endl;
-            // fout << "output " << ++j << ": " << treap.get_successor(x) << endl;
+            fout << i << ": get_successor(" << x << ")" << endl;
+            fout << "output " << ++j << ": " << treap.get_successor(x) << endl;
             break;
         }
     }
