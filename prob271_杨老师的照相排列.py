@@ -5,6 +5,7 @@ def main():
     def solve(a):
         if list(a) == [0] * len(a):
             return 1
+
         ans = 0
         for i in range(k):
             if a[i] > 0 and a[i] <= N[i] and (i == k - 1 or a[i] > a[i + 1]):
